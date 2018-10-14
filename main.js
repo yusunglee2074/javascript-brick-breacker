@@ -45,11 +45,28 @@ class Game {
     setInterval(function() {
       console.log("게임 동작중");
 
-      // 혹시 공이 벽이나 벽돌, 유저바에 닿았나?
-      ball.checkContactAndDraw(userBar, bricks);
+      // 1프레임 마다 공이 진행
+      ball.move();
 
-      // 위치바 그리기
-      userBar.draw();
+      // 혹시 공이 벽이나 벽돌, 유저바에 닿았나?
+      if (ball.x > 300 || ball.x < 0) {
+        ball.goingX *= -1;
+      }
+      if (ball.y < 0) {
+        // 공이 천장에 닿음
+        ball.goingY *= -1;
+      }
+      for (let i = 0; i < Bricks.length; i++) {
+        if (Bricks.checkHit(ball.x, ball.y)) {
+          console.log("벽돌에 닿았어요!");
+        }
+      }
+      if (userBar.checkHit(ball.x, ball.y) {
+          console.log("유저바에 닿았어요!");
+      }
+
+      // 위치바 그리기 ㅡ 유저가 움직이지 않는이상 계속 그릴필요가 없다.
+      // userBar.draw();
 
 
       // 게임이 끝낫는가?
@@ -81,6 +98,11 @@ class Brick {
     this.x = x;
     this.y = y;
   }
+
+  checkHit(x, y) {
+    if (
+
+  }
 }
 
 class UserBar {
@@ -109,6 +131,16 @@ class Ball {
     console.log("공 생성완료");
     this.x = x;
     this.y = y;
+
+    // 공의 진행방향 정의.
+    this.goingX = 1;
+    this.goingY = 1;
+  }
+
+
+  move() {
+    this.x += x;
+    this.y += y;
   }
 }
 
