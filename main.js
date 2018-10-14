@@ -33,7 +33,7 @@ class Game {
     // 리스트로 빼자
     let bricks = [];
     for (let i = 0; i < 10; i++) {
-      bricks.push(new Brick(i * 10, 0));
+      bricks.push(new Brick(60 * i, 0));
     }
 
 
@@ -42,27 +42,28 @@ class Game {
 
     // 게임은 일단 초당 1프레임으로 설정해보자.
     // 그리고 매번 동작마다 공과 유저바의 위치에 따라 그린다음 게임이 끝났는지, 벽돌은 부수는지, 혹은 쳐내는지를 확인해야할것 같다.
-    setInterval(function() {
+    let interval = setInterval(function() {
       console.log("게임 동작중");
 
       // 1프레임 마다 공이 진행
       ball.move(ball.goingX * 10, ball.goingY * 10);
 
-      // 혹시 공이 벽이나 벽돌, 유저바에 닿았나?
-      if (ball.x > 300 || ball.x < 0) {
+      // 혹시 공이 벽에 닿았나?
+      if (ball.x == 290 || ball.x == 0) {
         ball.goingX *= -1;
       }
-      if (ball.y < 0) {
-        // 공이 천장에 닿음
+      // 공이 천장에 닿음
+      if (ball.y == 0) {
         ball.goingY *= -1;
       }
+      // 공이 벽돌에 닿음
       for (let i = 0; i < bricks.length; i++) {
-        if (bricks[i].checkHit(ball.x, ball.y)) {
-          console.log("벽돌에 닿았어요!");
+        if (bricks[i].checkHit(ball)) {
+          bricks[i].deleteBrick();
         }
       }
-      if (userBar.checkHit(ball.x, ball.y)) {
-          console.log("유저바에 닿았어요!");
+      if (userBar.checkHit(ball)) {
+        ball.goingY *= -1;
       }
 
       // 위치바 그리기 ㅡ 유저가 움직이지 않는이상 계속 그릴필요가 없다.
@@ -70,9 +71,13 @@ class Game {
 
 
       // 게임이 끝낫는가?
+      // game.start()등의 메소드로 빼서 다시 시작할수 있도록
+      if (ball.y == 330) {
+        clearInterval(interval);
+      }
       
       
-    }, 1000)
+    }, 100)
 
     
     
@@ -96,10 +101,53 @@ class Brick {
     console.log("벽돌 생성완료");
     this.x = x;
     this.y = y;
+    this.status = true;
+    this.draw();
   }
 
-  checkHit(x, y) {
-    return true;
+  checkHit(ball) {
+    if (this.status) {
+      let hit = false;
+      // 블럭의 위쪽을 때렸을때
+      if (this.y == ball.y) {
+        if (this.x <= ball.x && ball.x <= this.x + 50) {
+          ball.goingY *= -1;
+          hit = true;
+        }
+      }
+      // 블럭의 아래쪽을 때렸을 때
+      if (this.y + 10 == ball.y) {
+        if (this.x <= ball.x && ball.x <= this.x + 50) {
+          ball.goingY *= -1;
+          hit = true;
+        }
+      }
+      // 블럭의 양 옆쪽을 때렸을 때
+      if (this.y - 10 <= ball.y && ball.y <= this.y + 20) {
+        if (this.x - 10 <= ball.x && ball.x <= this.x) {
+          ball.goingX *= -1;
+          hit = true;
+        }
+        if (this.x + 50 <= ball.x && ball.x <= this.x + 60) {
+          ball.goingX *= -1;
+          hit = true;
+        }
+      }
+
+      if (hit) this.status = false;
+      return hit;
+    } else {
+      return false;
+    }
+  }
+
+  deleteBrick() {
+    context.clearRect(this.x, this.y, 50, 10);
+  }
+
+  draw() {
+    context.fillStyle = "rgba(200, 0, 0, 0.5)";
+    context.fillRect(this.x, this.y, 50, 10);
   }
 }
 
@@ -134,8 +182,14 @@ class UserBar {
     }
   }
 
-  checkHit() {
+  checkHit(ball) {
+    if (ball.y == 290) {
+      if (this.x <= ball.x && ball.x <= this.x + 50) {
+        return true;
+      }
+    }
 
+    return false;
   }
 }
 
