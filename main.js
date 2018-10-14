@@ -46,7 +46,7 @@ class Game {
       console.log("게임 동작중");
 
       // 1프레임 마다 공이 진행
-      ball.move();
+      ball.move(ball.goingX * 10, ball.goingY * 10);
 
       // 혹시 공이 벽이나 벽돌, 유저바에 닿았나?
       if (ball.x > 300 || ball.x < 0) {
@@ -147,13 +147,22 @@ class Ball {
 
     // 공의 진행방향 정의.
     this.goingX = 1;
-    this.goingY = 1;
+    this.goingY = -1;
+
+    this.draw();
   }
 
 
   move(x, y) {
+    context.clearRect(this.x, this.y, 10, 10);
     this.x += x;
     this.y += y;
+    this.draw();
+  }
+
+  draw() {
+    context.fillStyle = "rgba(0, 200, 0, 0.5)";
+    context.fillRect(this.x, this.y, 10, 10);
   }
 }
 
