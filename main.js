@@ -1,11 +1,11 @@
-const canvas = document.getElementById('game-screen');
+let canvas = document.getElementById('game-screen');
+let context;
 
 if (canvas.getContext) {
-  const context = canvas.getContext('2d');
+  context = canvas.getContext('2d');
 } else {
   window.alert("err1/context is not supported");
 }
-
 
 // 진행순서
 // 1. 게임 뼈대 먼저 잡기
@@ -16,9 +16,9 @@ class Game {
     console.log("게임 생성 완료");
     
     // 게임 생성 후 유저바, 공생성
-    const userBar = new UserBar(140, 500);
-    const ball = new Ball(140, 490);
-    const gameEnd = false;
+    let userBar = new UserBar(140, 300);
+    let ball = new Ball(140, 290);
+    let gameEnd = false;
 
     // 벽돌을 어떻게 생산할까 했는데...
     // 일단 canvas의 크기가 300px * 600px 이므로
@@ -38,7 +38,7 @@ class Game {
 
 
     // 유저 인풋 리스너
-    this.userInputListener();
+    this.userInputListener(userBar);
 
     // 게임은 일단 초당 1프레임으로 설정해보자.
     // 그리고 매번 동작마다 공과 유저바의 위치에 따라 그린다음 게임이 끝났는지, 벽돌은 부수는지, 혹은 쳐내는지를 확인해야할것 같다.
@@ -56,12 +56,12 @@ class Game {
         // 공이 천장에 닿음
         ball.goingY *= -1;
       }
-      for (let i = 0; i < Bricks.length; i++) {
-        if (Bricks.checkHit(ball.x, ball.y)) {
+      for (let i = 0; i < bricks.length; i++) {
+        if (bricks[i].checkHit(ball.x, ball.y)) {
           console.log("벽돌에 닿았어요!");
         }
       }
-      if (userBar.checkHit(ball.x, ball.y) {
+      if (userBar.checkHit(ball.x, ball.y)) {
           console.log("유저바에 닿았어요!");
       }
 
@@ -70,7 +70,6 @@ class Game {
 
 
       // 게임이 끝낫는가?
-      isGameEnd();
       
       
     }, 1000)
@@ -79,7 +78,7 @@ class Game {
     
   }
 
-  userInputListener() {
+  userInputListener(userBar) {
     console.log("유저 인풋 리스너")
     document.addEventListener("keydown", function(e) {
       userBar.move(e.keyCode);
@@ -100,8 +99,7 @@ class Brick {
   }
 
   checkHit(x, y) {
-    if (
-
+    return true;
   }
 }
 
@@ -110,19 +108,34 @@ class UserBar {
     console.log("유저 바 생성완료");
     this.x = x;
     this.y = y;
+    this.draw(x, y);
+  }
+
+  draw(x, y) {
+    context.fillStyle = "rgba(0, 0, 200, 0.5)";
+    context.fillRect(x, y, 50, 10);
   }
 
   move(keyCode) {
     switch(keyCode) {
       case 37:
-        // 왼쪽 화살표
-        this.x -= 10;
+        if (this.x > 0) {
+          // 기존에 위치에 있던 유저바를 제거
+          context.clearRect(0, 300, 300, 10);
+          this.draw(this.x -= 10, this.y);
+        }
         break;
       case 39:
-        // 오른쪽
-        this.x += 10;
+        if (this.x < 250) {
+          context.clearRect(0, 300, 300, 10);
+          this.draw(this.x += 10, this.y);
+        }
         break;
     }
+  }
+
+  checkHit() {
+
   }
 }
 
@@ -138,7 +151,7 @@ class Ball {
   }
 
 
-  move() {
+  move(x, y) {
     this.x += x;
     this.y += y;
   }
