@@ -32,8 +32,14 @@ class Game {
     // 게임 블럭 생성
     // 리스트로 빼자
     let bricks = [];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 5; i++) {
       bricks.push(new Brick(60 * i, 0));
+    }
+    for (let i = 0; i < 5; i++) {
+      bricks.push(new Brick(60 * i, 20));
+    }
+    for (let i = 0; i < 5; i++) {
+      bricks.push(new Brick(60 * i, 40));
     }
 
 
