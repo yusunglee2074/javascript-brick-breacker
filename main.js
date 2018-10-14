@@ -53,7 +53,7 @@ class Game {
 
 
       // 게임이 끝낫는가?
-      isGameEnd()
+      isGameEnd();
       
       
     }, 1000)
@@ -64,6 +64,9 @@ class Game {
 
   userInputListener() {
     console.log("유저 인풋 리스너")
+    document.addEventListener("keydown", function(e) {
+      userBar.move(e.keyCode);
+    });
   }
   
   isGameEnd() {
@@ -85,6 +88,19 @@ class UserBar {
     console.log("유저 바 생성완료");
     this.x = x;
     this.y = y;
+  }
+
+  move(keyCode) {
+    switch(keyCode) {
+      case 37:
+        // 왼쪽 화살표
+        this.x -= 10;
+        break;
+      case 39:
+        // 오른쪽
+        this.x += 10;
+        break;
+    }
   }
 }
 
